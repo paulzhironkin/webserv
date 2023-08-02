@@ -1,0 +1,9 @@
+#VS Code
+.vscode
+
+#Objects
+*.o
+
+#Webserv
+
+webserv
