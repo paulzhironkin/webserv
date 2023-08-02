@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:59:15 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/02 15:15:59 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/02 19:06:05 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,26 @@ Socket::Socket()
 		perror("Listen error\n");
 		exit(EXIT_FAILURE);
 	}
+	//test
+	int new_socket;
+	while(1)
+    {
+         struct sockaddr_storage client_addr; // Address structure to store client information
+    	socklen_t client_addr_len = sizeof(client_addr); // Initialize the size of the address structure
+
+		// Accept incoming connections
+		int new_socket = accept(listener, (struct sockaddr*)&client_addr, &client_addr_len);
+		if (new_socket < 0) {
+			perror("In accept");
+			exit(EXIT_FAILURE);
+    	}
+        
+        char buffer[30000] = {0};
+		int valread;
+        valread = read( new_socket , buffer, 30000);
+        printf("%s\n",buffer );
+        close(new_socket);
+    }
 }
 
 int Socket::get_listener()

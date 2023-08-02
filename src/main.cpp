@@ -6,13 +6,14 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 13:57:50 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/02 13:58:25 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/02 19:06:54 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
+#include "Socket.hpp"
 
 int main()
 {
-	std::cout << "Hello world!\n";
+	Socket test;
 }

@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:31:45 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/02 15:16:01 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/02 18:25:52 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 class Socket
 {
 private:
-	int listener;			//fd for socket
+	int listener;		//fd for socket
 public:
 	Socket();
 	int get_listener();
