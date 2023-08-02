@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 13:57:50 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/02 19:06:54 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/02 23:24:41 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,4 +16,5 @@
 int main()
 {
 	Socket test;
+	test.create_pull();
 }
