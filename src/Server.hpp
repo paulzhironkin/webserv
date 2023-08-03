@@ -1,22 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/02 13:57:50 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 09:52:38 by latahbah         ###   ########.fr       */
+/*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
+/*   Updated: 2023/08/03 10:41:55 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include "Socket.hpp"
-#include "Server.hpp"
+#ifndef SERVER_HPP
+#define SERVER_HPP
 
-int main()
+#include "Socket.hpp"
+
+class Server
 {
-	Server webserv;
-	webserv.launch_server();
-	return 0;
-}
+private:
+	Socket websocket;
+	void get_request(int client_fd);
+	void connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds);
+public:
+	Server();
+	void launch_server();
+};
+
+#endif

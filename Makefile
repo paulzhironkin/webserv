@@ -6,7 +6,7 @@ STD = -std=c++98
 
 SRC_PATH = src/
 
-SRCS = main.cpp Socket.cpp
+SRCS = main.cpp Socket.cpp Server.cpp
 
 OBJS = $(addprefix $(SRC_PATH), $(SRCS:.cpp=.o))
 
