@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:59:15 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 09:52:15 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/03 11:03:09 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ Socket::Socket()
 	//Set up hints to find all addresses to add to socket
 	struct addrinfo hints;
     memset(&hints, 0, sizeof (struct addrinfo));
-    hints.ai_family = AF_UNSPEC;    /* allow IPv4 or IPv6 */
+    hints.ai_family = AF_INET;    /* allow IPv4 only*/
     hints.ai_socktype = SOCK_STREAM;/* Stream socket (TCP) */
     hints.ai_flags = AI_PASSIVE;    /* for wildcard IP address */
 	struct addrinfo *result;		/* starting rointer for getaddrinfo return structsv*/

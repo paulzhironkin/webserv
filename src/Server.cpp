@@ -6,13 +6,13 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 10:44:36 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/03 12:15:00 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server() : websocket()
+Server::Server() : websocket()//, clients()
 {
 }
 
@@ -53,12 +53,12 @@ void Server::get_request(int client_fd)
 
 void Server::connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds)
 {
-	socklen_t addrlen;
-    struct sockaddr_storage client_saddr;
-	addrlen = sizeof(struct sockaddr_storage); //addrlen to pass to accept
-	// fd_new to accept() to get client fd
 	int fd_new;
+	struct sockaddr_storage client_saddr;
+	socklen_t addrlen;
+	addrlen = sizeof (struct sockaddr_storage);
 	//write address info about new client and its fd
+	// if ((fd_new = accept (listener, (struct sockaddr *) &client_saddr, &addrlen)) == -1)
 	if ((fd_new = accept(listener, (struct sockaddr *) &client_saddr, &addrlen)) == -1){
 		perror("Accept error\n");
 		exit(EXIT_FAILURE);
