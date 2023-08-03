@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 12:15:00 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/03 13:26:58 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,12 +72,12 @@ void Server::connect_client(int listener, struct pollfd *pollfds, int &numfds, i
 		}
 		maxfds += NUM_FDS;
 	}
-	std::cout<<"Open new socket fd:"<<fd_new<<std::endl;
 	numfds++; //update counter of fds in pollfds
 	//write info about fd in pollfds
 	(pollfds + numfds - 1) -> fd = fd_new;
 	(pollfds + numfds - 1) -> events = POLLIN;
 	(pollfds + numfds - 1) -> revents = 0;
+	connection_info(fd_new, client_saddr);
 }
 
 void Server::launch_server()
@@ -134,4 +134,21 @@ void Server::launch_server()
 			}
 		}
 	}
+}
+
+void Server::connection_info(int client_fd, struct sockaddr_storage client_saddr)
+{
+	struct sockaddr_in  *ptr;
+	char ip_address [INET_ADDRSTRLEN];
+	ptr = (struct sockaddr_in *) &client_saddr;
+	inet_ntop(AF_INET, &(ptr -> sin_addr), ip_address, sizeof (ip_address));
+	std::cout<<GREEN;
+	std::cout<<std::endl<<"****************************************"<<std::endl;
+	std::cout<<"*                                      *"<<std::endl;
+	std::cout<<"*        Open new socket fd: "<<client_fd<<"         *"<<std::endl;
+	std::cout<<"*                                      *"<<std::endl;
+	std::cout<<"*  Connection from client: "<<ip_address<<"   *"<<std::endl;
+	std::cout<<"*                                      *"<<std::endl;
+	std::cout<<"****************************************"<<std::endl<<std::endl;
+	std::cout<<RESET;
 }
