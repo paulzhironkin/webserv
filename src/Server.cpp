@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 13:26:58 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/03 14:35:19 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 
 Server::Server() : websocket()//, clients()
 {
+	listener = websocket.get_listener();
+	if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
+		perror("*Poolfds malloc error\n");
+		exit(EXIT_FAILURE);
+	}
+	pollfds -> fd = listener;
+    pollfds -> events = POLLIN;
+    pollfds -> revents = 0;
 }
 
 void Server::get_request(int client_fd)
@@ -35,13 +43,22 @@ void Server::get_request(int client_fd)
 		if (bytes_sent == -1) {
 			perror("Send error");
 		} else {
-			printf("Sent %d bytes: %s\n", bytes_sent, response_message);
+			std::cout<<"\033[92m";
+			std::cout<<"Sent "<<bytes_sent<<" bytes:"<<std::endl;
+			std::cout<<response_message<<std::endl<<std::endl;
+			std::cout<<RESET;
 		}
 	}
 	else
 	{
 		// connection closed by client
-		printf("Socket %d closed by client\n\n", client_fd);
+		std::cout<<CYAN;
+		std::cout<<"****************************************"<<std::endl;
+		std::cout<<"*                                      *"<<std::endl;
+		std::cout<<"*      Socket "<<client_fd<<" closed by client       *"<<std::endl;
+		std::cout<<"*                                      *"<<std::endl;
+		std::cout<<"****************************************"<<std::endl<<std::endl;
+		std::cout<<RESET;
 		if (close (client_fd) == -1)
 		{
 			perror("Close error\n");
@@ -82,30 +99,14 @@ void Server::connect_client(int listener, struct pollfd *pollfds, int &numfds, i
 
 void Server::launch_server()
 {
-	int listener = websocket.get_listener();
+	std::cout<<"  Setting up server..."<<std::endl;
 	nfds_t nfds = 0; //number of pollfds structs passed in poll()
-    struct pollfd *pollfds; //structs with fd and events to check for ready to work
-    int maxfds = 0; //max fds is used to realloc pollfds array of structs
-	int numfds = 0; //cur number of fds in pollfds
-	
-	if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
-		perror("*Poolfds malloc error\n");
-		exit(EXIT_FAILURE);
-	}
-    maxfds = NUM_FDS; //update maxfds to check later whether *pollfds is full or not 
-	//Add listener to poll
-	pollfds -> fd = listener;
-    pollfds -> events = POLLIN;
-    pollfds -> revents = 0;
-    numfds = 1; // update number of fds in pollfds
-	
-	//Vars for client address info
-	// socklen_t addrlen;
-    // struct sockaddr_storage client_saddr;
-    // char str [INET6_ADDRSTRLEN];
-    // struct sockaddr_in  *ptr;
-    // struct sockaddr_in6  *ptr1;
+    int maxfds = NUM_FDS; //max fds is used to realloc pollfds array of structs
+	int numfds = 1; //cur number of fds in pollfds (1 is because listener is already added in constructor
 
+	std::cout<<GREEN;
+	std::cout<<"[WEBSERV]Waiting for connections.."<<std::endl;
+	std::cout<<RESET;
 	while (true)
 	{
 		//update nfds to poll all fds in pollfds

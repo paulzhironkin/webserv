@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 13:25:11 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/03 14:35:33 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,9 @@ class Server
 {
 private:
 	Socket websocket;
-	//std::vector<Client> clients;
+	int listener;
+	struct pollfd *pollfds;
+	nfds_t nfds;
 	void connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds);
 	void get_request(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);

@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:59:15 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 11:03:09 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/03 14:15:49 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Socket::Socket()
 {
+    std::cout<<"  Setting up socket..."<<std::endl; 
 	//Set up hints to find all addresses to add to socket
 	struct addrinfo hints;
     memset(&hints, 0, sizeof (struct addrinfo));
@@ -51,6 +52,15 @@ Socket::Socket()
 	if (listen (listener, BACKLOG) == -1) {
 		perror("Listen error\n");
 		exit(EXIT_FAILURE);
+	}
+    std::cout<<"  Socket is ready for connection."<<std::endl;
+}
+
+Socket::~Socket()
+{
+    if (close(listener) == -1) {
+        perror("Close error\n");
+        exit(EXIT_FAILURE);
 	}
 }
 

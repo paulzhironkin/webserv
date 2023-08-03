@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:31:45 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 00:04:15 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/03 14:18:43 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,23 @@
 #include <time.h>
 #include <iostream>
 
+// ANSI escape code for text colors
+#define RESET   "\033[0m"
+#define BLACK   "\033[30m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BLUE    "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN    "\033[36m"
+#define WHITE   "\033[37m"
+
 #define PORT		"4242"	//port to connect. It's extracted from serv config
 #define BUF_SIZE	10000
 #define BACKLOG		10 		// Max num of connections on socket
 #define NUM_FDS		5		//Number of checking fds
+
+
 
 class Socket
 {
@@ -42,8 +55,8 @@ private:
 	int listener;		//fd for socket
 public:
 	Socket();
-	void create_pull();
 	int get_listener();
+	~Socket();
 };
 
 #endif
