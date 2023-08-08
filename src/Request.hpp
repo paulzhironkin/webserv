@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/08 17:30:07 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/08 21:26:08 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/08 22:24:18 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <map>
 #include <string>
 #include <iostream>
+#include <cstdbool>
 
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"
@@ -30,18 +31,24 @@
 class Request
 {
 private:
-	std::string request_line;
 	std::string type;
 	std::string resource;
 	std::string protocol;
 	std::map<std::string, std::string> headers;
 	std::string body;
+	bool isValid;
+	void parse_request_line(std::string request_line);
+	void parse_headers(std::string text_headers);
+	void check_index(std::size_t index);
 public:
 	Request(std::string text);
-	std::string get_request_line();
+	std::string get_type();
+	std::string get_resource();
+	std::string get_protocol();
 	std::map<std::string, std::string> get_headers();
 	std::string get_header_value(std::string key);
 	std::string get_body();
+	bool valid();
 	void print_info();
 };
 
