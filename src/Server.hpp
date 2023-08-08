@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 14:35:33 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/04 17:13:34 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ private:
 public:
 	Server();
 	void launch_server();
+	~Server(); //free struct pollfds
 };
 
 #endif

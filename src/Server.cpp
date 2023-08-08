@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 14:35:19 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/04 17:29:03 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ Server::Server() : websocket()//, clients()
 	pollfds -> fd = listener;
     pollfds -> events = POLLIN;
     pollfds -> revents = 0;
+	nfds = 1;
 }
 
 void Server::get_request(int client_fd)
@@ -95,12 +96,13 @@ void Server::connect_client(int listener, struct pollfd *pollfds, int &numfds, i
 	(pollfds + numfds - 1) -> events = POLLIN;
 	(pollfds + numfds - 1) -> revents = 0;
 	connection_info(fd_new, client_saddr);
+	
 }
 
 void Server::launch_server()
 {
 	std::cout<<"  Setting up server..."<<std::endl;
-	nfds_t nfds = 0; //number of pollfds structs passed in poll()
+	//nfds_t nfds = 0; //number of pollfds structs passed in poll()
     int maxfds = NUM_FDS; //max fds is used to realloc pollfds array of structs
 	int numfds = 1; //cur number of fds in pollfds (1 is because listener is already added in constructor
 
@@ -152,4 +154,14 @@ void Server::connection_info(int client_fd, struct sockaddr_storage client_saddr
 	std::cout<<"*                                      *"<<std::endl;
 	std::cout<<"****************************************"<<std::endl<<std::endl;
 	std::cout<<RESET;
+}
+
+Server::~Server()
+{
+	for (int fd = 0; fd < (nfds + 1); fd++)
+	{
+		int cur_fd = (pollfds + fd)->fd;
+		if (cur_fd > 0)
+			close(fd);
+	}
 }
