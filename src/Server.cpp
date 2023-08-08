@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/04 17:29:03 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/08 21:00:24 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ void Server::get_request(int client_fd)
 	}
 	else if (nbytes > 0)
 	{
-		std::cout<<buf<<std::endl;
+		std::cout<<"Client request:\n";
+		std::cout<<"["<<buf<<"]"<<std::endl;
+		Request req(buf);
 		const char *response_message = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello, World";
 		int message_len = strlen(response_message);
 		

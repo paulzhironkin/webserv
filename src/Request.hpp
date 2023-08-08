@@ -1,24 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/08 18:01:01 by latahbah         ###   ########.fr       */
+/*   Created: 2023/08/08 17:30:07 by latahbah          #+#    #+#             */
+/*   Updated: 2023/08/08 21:26:08 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#ifndef REQUEST_HPP
+#define REQUEST_HPP
 
-#include "Socket.hpp"
-#include "Client.hpp"
-#include "Request.hpp"
-#include <vector>
+#include <map>
+#include <string>
+#include <iostream>
 
-// ANSI escape code for text colors
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"
 #define RED     "\033[31m"
@@ -29,20 +27,22 @@
 #define CYAN    "\033[36m"
 #define WHITE   "\033[37m"
 
-class Server
+class Request
 {
 private:
-	Socket websocket;
-	int listener;
-	struct pollfd *pollfds;
-	nfds_t nfds;
-	void connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds);
-	void get_request(int client_fd);
-	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
+	std::string request_line;
+	std::string type;
+	std::string resource;
+	std::string protocol;
+	std::map<std::string, std::string> headers;
+	std::string body;
 public:
-	Server();
-	void launch_server();
-	~Server(); //free struct pollfds
+	Request(std::string text);
+	std::string get_request_line();
+	std::map<std::string, std::string> get_headers();
+	std::string get_header_value(std::string key);
+	std::string get_body();
+	void print_info();
 };
 
 #endif
