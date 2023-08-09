@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/08 22:26:57 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/09 15:26:04 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,9 +120,8 @@ void Server::launch_server()
 			exit(EXIT_FAILURE);
 		}
 		//in cycle check for ready fds
-		for (int fd = 0; fd < (nfds + 1); fd++)
+		for (int fd = 0; fd < static_cast<int>(nfds + 1); fd++)
 		{
-			int cur_fd = (pollfds + fd)->fd;
 			if ((pollfds + fd) -> fd <= 0) //if fd < 0 - it is inactive
 				continue;
 			//flag POLLIN means fd ready for reading
@@ -160,7 +159,7 @@ void Server::connection_info(int client_fd, struct sockaddr_storage client_saddr
 
 Server::~Server()
 {
-	for (int fd = 0; fd < (nfds + 1); fd++)
+	for (int fd = 0; fd < static_cast<int>(nfds + 1); fd++)
 	{
 		int cur_fd = (pollfds + fd)->fd;
 		if (cur_fd > 0)

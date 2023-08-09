@@ -1,7 +1,7 @@
 NAME = webserv
 
 CPP = c++
-#FLAGS = -Wall -Werror -Wextra -g
+FLAGS = -Wall -Werror -Wextra -g
 STD = -std=c++98
 
 SRC_PATH = src/

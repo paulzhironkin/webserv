@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/08 17:42:47 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/08 22:25:14 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/09 15:33:03 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void Request::print_info()
 	std::cout<<"Client request:"<<std::endl<<std::endl;
 	std::cout<<RED;
 	std::cout<<"Request line: "<<std::endl;
-	std::cout<<"Type: ["<<type<<"]"<<std::endl;
+	std::cout<<"Type:     ["<<type<<"]"<<std::endl;
 	std::cout<<"Resource: ["<<resource<<"]"<<std::endl;
 	std::cout<<"Protocol: ["<<protocol<<"]"<<std::endl<<std::endl;
 	std::cout<<YELLOW;
