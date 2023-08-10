@@ -39,10 +39,17 @@ void Server::get_request(int client_fd)
 		Request req(buf);
 		if (!req.valid())
 			return ;
-		const char *response_message = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello, World";
-		int message_len = strlen(response_message);
+		Response resp("200");
+		std::string key = "Status Line";
+		std::string value = "HTTP/1.1 200 OK";
+		resp.set_header(key, value);
+		// resp.set_header("slava", "ukraine");
+		// const char *response_message = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello, World";
+		std:: string response_message = resp.generate_response();
+
+		int message_len = strlen(response_message.c_str());
 		
-		int bytes_sent = send(client_fd, response_message, message_len, 0);
+		int bytes_sent = send(client_fd, response_message.c_str(), message_len, 0);
 		if (bytes_sent == -1) {
 			perror("Send error");
 		} else {

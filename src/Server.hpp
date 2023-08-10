@@ -16,6 +16,7 @@
 #include "Socket.hpp"
 #include "Client.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 #include <vector>
 
 // ANSI escape code for text colors
