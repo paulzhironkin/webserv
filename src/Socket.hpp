@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:31:45 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 14:18:43 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/10 09:53:30 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@
 #define PORT		"4242"	//port to connect. It's extracted from serv config
 #define BUF_SIZE	10000
 #define BACKLOG		10 		// Max num of connections on socket
-#define NUM_FDS		5		//Number of checking fds
+#define NUM_FDS		10		//Number of checking fds
 
 
 

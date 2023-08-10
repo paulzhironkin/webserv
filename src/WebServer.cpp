@@ -6,23 +6,89 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/10 09:08:19 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/10 11:42:00 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServer.hpp"
 
-WebServer::WebServer() : websocket()
+WebServer::WebServer(string config)
 {
-	listener = websocket.get_listener();
-	if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
-		perror("*Poolfds malloc error\n");
-		exit(EXIT_FAILURE);
+	//Iterating over config to extract all server{} confs
+	while (config.length() > 0)
+	{
+		string server_config = "";
+		size_t start = 0;
+		size_t end = string::npos;
+		if ((start = config.find("server {")) != string::npos)
+		{
+			int counter = 1; //counter to check '{{{}}}' cases.
+			size_t close_bracket = string::npos;//string::npos cause to check if i do not find it
+			
+			//part of code to find indexes of close server brackets
+			int i = start + 8; // to take index after "server {"
+			while (i < config.length() && counter != 0)
+			{
+				if (config[i] == '{')
+					counter++;
+				else if (config[i] == '}')
+					counter--;
+				i++;
+			}
+			if (counter == 0)
+				close_bracket = static_cast<size_t>(i);
+			end = close_bracket;
+			//write server{} text in server_config string ONLY if we close brackets
+			if (close_bracket != string::npos)
+				server_config = config.substr(start, close_bracket);
+			//erase from config string all chars we checked
+		}
+		config.erase(start, end);
+		//if we can parse server{} it have to contain smth inside. 
+		//if NOT - server_config is empty;
+		//so we can parse server in Server.cpp class
+		if (server_config.length() > 0)
+		{
+			Server new_server;
+			//TODO: here need to add check for new_server
+			//push_back() ONLY if good
+			servers.push_back(new_server);
+		}
 	}
-	pollfds -> fd = listener;
-    pollfds -> events = POLLIN;
-    pollfds -> revents = 0;
-	nfds = 1;
+	//we continue ONLY if we have atleast 1 server in servers vector
+	if (servers.empty())
+		std::cout<<"Error: no valid server configs"<<std::endl; // TODO: need to hanlde properly
+	else
+		cout<<"Server number is "<<servers.size()<<endl;
+	exit(EXIT_SUCCESS);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	// listener = websocket.get_listener();
+	// if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
+	// 	perror("*Poolfds malloc error\n");
+	// 	exit(EXIT_FAILURE);
+	// }
+	// pollfds -> fd = listener;
+    // pollfds -> events = POLLIN;
+    // pollfds -> revents = 0;
+	// nfds = 1;
 }
 
 void WebServer::get_request(int client_fd)
@@ -133,7 +199,7 @@ void WebServer::launch_server()
                 }
 				else //getting info from connection
 				{
-					get_request((pollfds + fd)->fd); /* TODO: split it to get_request->parse_reqiest->send response  */
+					get_request((pollfds + fd)->fd); // TODO: split it to get_request->parse_reqiest->send response
 				}
 			}
 		}

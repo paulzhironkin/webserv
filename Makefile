@@ -1,12 +1,12 @@
 NAME = webserv
 
 CPP = c++
-FLAGS = -Wall -Werror -Wextra -g
+#FLAGS = -Wall -Werror -Wextra -g
 STD = -std=c++98
 
 SRC_PATH = src/
 
-SRCS = main.cpp Socket.cpp WebServer.cpp Request.cpp
+SRCS = main.cpp WebServer.cpp Server.cpp Request.cpp Socket.cpp 
 
 OBJS = $(addprefix $(SRC_PATH), $(SRCS:.cpp=.o))
 
