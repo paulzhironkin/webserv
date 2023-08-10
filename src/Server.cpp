@@ -6,13 +6,13 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/09 15:26:04 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/10 08:52:32 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
-Server::Server() : websocket()//, clients()
+Server::Server() : websocket()
 {
 	listener = websocket.get_listener();
 	if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
