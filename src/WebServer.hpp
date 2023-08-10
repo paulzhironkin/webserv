@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   WebServer.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/08 18:01:01 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/10 09:07:32 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-#define SERVER_HPP
+#ifndef WEBSERVER_HPP
+#define WEBSERVER_HPP
 
 #include "Socket.hpp"
 #include "Client.hpp"
@@ -29,7 +29,7 @@
 #define CYAN    "\033[36m"
 #define WHITE   "\033[37m"
 
-class Server
+class WebServer
 {
 private:
 	Socket websocket;
@@ -40,9 +40,9 @@ private:
 	void get_request(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
 public:
-	Server();
+	WebServer();
 	void launch_server();
-	~Server(); //free struct pollfds
+	~WebServer(); //free struct pollfds
 };
 
 #endif

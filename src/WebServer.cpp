@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.cpp                                         :+:      :+:    :+:   */
+/*   WebServer.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/10 08:52:32 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/10 09:08:19 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Server.hpp"
+#include "WebServer.hpp"
 
-Server::Server() : websocket()
+WebServer::WebServer() : websocket()
 {
 	listener = websocket.get_listener();
 	if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
@@ -25,7 +25,7 @@ Server::Server() : websocket()
 	nfds = 1;
 }
 
-void Server::get_request(int client_fd)
+void WebServer::get_request(int client_fd)
 {
 	char buf[BUF_SIZE];
 	ssize_t nbytes = recv(client_fd, buf, (size_t)BUF_SIZE, 0);
@@ -71,7 +71,7 @@ void Server::get_request(int client_fd)
 	}
 }
 
-void Server::connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds)
+void WebServer::connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds)
 {
 	int fd_new;
 	struct sockaddr_storage client_saddr;
@@ -101,7 +101,7 @@ void Server::connect_client(int listener, struct pollfd *pollfds, int &numfds, i
 	
 }
 
-void Server::launch_server()
+void WebServer::launch_server()
 {
 	std::cout<<"  Setting up server..."<<std::endl;
 	//nfds_t nfds = 0; //number of pollfds structs passed in poll()
@@ -140,7 +140,7 @@ void Server::launch_server()
 	}
 }
 
-void Server::connection_info(int client_fd, struct sockaddr_storage client_saddr)
+void WebServer::connection_info(int client_fd, struct sockaddr_storage client_saddr)
 {
 	struct sockaddr_in  *ptr;
 	char ip_address [INET_ADDRSTRLEN];
@@ -157,7 +157,7 @@ void Server::connection_info(int client_fd, struct sockaddr_storage client_saddr
 	std::cout<<RESET;
 }
 
-Server::~Server()
+WebServer::~WebServer()
 {
 	for (int fd = 0; fd < static_cast<int>(nfds + 1); fd++)
 	{
