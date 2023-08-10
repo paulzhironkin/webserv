@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 09:12:28 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/10 11:36:54 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/10 11:46:05 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define SERVER_HPP
 
 #include <vector>
-#include "Socket.hpp"
+//#include "Socket.hpp"
 #include <string>
 #include <utility>
 
@@ -32,7 +32,7 @@ typedef struct Location {
 class Server
 {
 public:
-	vector<Socket> sockets; 			//vector of sockets for the server
+	//vector<Socket> sockets; 			//vector of sockets for the server
 	vector<int> listeners; 				//vector of open fds for the server
 	string server_name; 				// could be or not
 	vector<pair<int, string> > port_host;//host:port storage
@@ -42,7 +42,7 @@ public:
 	int max_client_body; 				//max size for body in request
 	vector<Location_t> locations;		//vector of loactions
 	
-	Server();
+	//Server();
 	
 	//need add method to check mandatory fileds is filled
 };

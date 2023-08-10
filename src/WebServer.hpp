@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/10 11:41:34 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/10 11:45:55 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #define WEBSERVER_HPP
 
 #include "Client.hpp"
-#include "Request.hpp"
+//#include "Request.hpp"
+#include <iostream>
 #include "Server.hpp"
 #include <vector>
 
@@ -36,14 +37,14 @@ class WebServer
 private:
 	vector<Server> servers; //if size == 0 there is no servers and return
 	struct pollfd *pollfds;
-	nfds_t nfds;
+	//nfds_t nfds;
 	void connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds);
 	void get_request(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
 public:
 	WebServer(string config);
 	void launch_server();
-	~WebServer(); //free struct pollfds
+	//~WebServer(); //free struct pollfds
 };
 
 #endif

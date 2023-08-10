@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/10 11:42:00 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/10 12:51:39 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,20 @@ WebServer::WebServer(string config)
 				close_bracket = static_cast<size_t>(i);
 			end = close_bracket;
 			//write server{} text in server_config string ONLY if we close brackets
+			// and after create new_server obj and put in servers vector
 			if (close_bracket != string::npos)
+			{
 				server_config = config.substr(start, close_bracket);
+				Server new_server; // need add server config so new_server creates
+				//TODO: here need to add check for new_server
+				//push_back() ONLY if good - need to check new_server that fileds are filled
+				servers.push_back(new_server);
+			}
 			//erase from config string all chars we checked
+			config.erase(start, end);
 		}
-		config.erase(start, end);
-		//if we can parse server{} it have to contain smth inside. 
-		//if NOT - server_config is empty;
-		//so we can parse server in Server.cpp class
-		if (server_config.length() > 0)
-		{
-			Server new_server;
-			//TODO: here need to add check for new_server
-			//push_back() ONLY if good
-			servers.push_back(new_server);
-		}
+		else
+			break;
 	}
 	//we continue ONLY if we have atleast 1 server in servers vector
 	if (servers.empty())
@@ -90,7 +89,7 @@ WebServer::WebServer(string config)
     // pollfds -> revents = 0;
 	// nfds = 1;
 }
-
+/*
 void WebServer::get_request(int client_fd)
 {
 	char buf[BUF_SIZE];
@@ -232,3 +231,5 @@ WebServer::~WebServer()
 			close(fd);
 	}
 }
+
+*/
