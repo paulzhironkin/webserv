@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/08 17:30:07 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/08 22:24:18 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/11 09:19:59 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <map>
 #include <string>
 #include <iostream>
-#include <cstdbool>
 
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"

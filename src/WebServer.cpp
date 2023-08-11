@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/10 12:51:39 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/11 11:36:11 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@ WebServer::WebServer(string config)
 		size_t end = string::npos;
 		if ((start = config.find("server {")) != string::npos)
 		{
+			//MAYBE PROBLEMS WITH INDEXES START ETC..
+			config = config.erase(0, start);
+			start = 0;
 			int counter = 1; //counter to check '{{{}}}' cases.
 			size_t close_bracket = string::npos;//string::npos cause to check if i do not find it
 			
@@ -33,6 +36,8 @@ WebServer::WebServer(string config)
 					counter++;
 				else if (config[i] == '}')
 					counter--;
+				if (counter == 0) //this need to str[i] = '}' but not '\n' etc..
+					break;
 				i++;
 			}
 			if (counter == 0)
@@ -43,7 +48,7 @@ WebServer::WebServer(string config)
 			if (close_bracket != string::npos)
 			{
 				server_config = config.substr(start, close_bracket);
-				Server new_server; // need add server config so new_server creates
+				Server new_server(server_config); // need add server config so new_server creates
 				//TODO: here need to add check for new_server
 				//push_back() ONLY if good - need to check new_server that fileds are filled
 				servers.push_back(new_server);
@@ -55,10 +60,10 @@ WebServer::WebServer(string config)
 			break;
 	}
 	//we continue ONLY if we have atleast 1 server in servers vector
-	if (servers.empty())
-		std::cout<<"Error: no valid server configs"<<std::endl; // TODO: need to hanlde properly
-	else
-		cout<<"Server number is "<<servers.size()<<endl;
+	// if (servers.empty())
+	// 	std::cout<<"Error: no valid server configs"<<std::endl; // TODO: need to hanlde properly
+	// else
+	// 	cout<<"Server number is "<<servers.size()<<endl;
 	exit(EXIT_SUCCESS);
 
 

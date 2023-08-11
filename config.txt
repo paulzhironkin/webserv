@@ -1,3 +1,5 @@
+sdgsdf
+sds
 server {
 	server_name youpi
 	listen 0.0.0.0:8000
@@ -28,6 +30,14 @@ server {
 		}
 	}
 }
+
+
+
+
+
+
+
+
 
 server {
 	server_name youpi
@@ -90,3 +100,4 @@ server {
 		}
 	}
 }
+
