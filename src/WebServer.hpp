@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/10 11:45:55 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/14 10:53:37 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,10 @@ private:
 	void get_request(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
 public:
-	WebServer(string config);
+	WebServer(string &config);
 	void launch_server();
+
+	void erase_comments(string &config);
 	//~WebServer(); //free struct pollfds
 };
 

@@ -6,14 +6,15 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/11 11:36:11 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/14 11:00:59 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServer.hpp"
 
-WebServer::WebServer(string config)
+WebServer::WebServer(string &config)
 {
+	erase_comments(config);
 	//Iterating over config to extract all server{} confs
 	while (config.length() > 0)
 	{
@@ -43,7 +44,7 @@ WebServer::WebServer(string config)
 			if (counter == 0)
 				close_bracket = static_cast<size_t>(i);
 			end = close_bracket;
-			//write server{} text in server_config string ONLY if we close brackets
+			//write server{...} text in server_config string ONLY if we close brackets
 			// and after create new_server obj and put in servers vector
 			if (close_bracket != string::npos)
 			{
@@ -66,23 +67,6 @@ WebServer::WebServer(string config)
 	// 	cout<<"Server number is "<<servers.size()<<endl;
 	exit(EXIT_SUCCESS);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	
 	// listener = websocket.get_listener();
 	// if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
@@ -94,6 +78,28 @@ WebServer::WebServer(string config)
     // pollfds -> revents = 0;
 	// nfds = 1;
 }
+
+/**************************************************
+ * 
+ *	Erase_comments() delete lines 
+ *	with # at start from config
+ *
+**************************************************/
+void WebServer::erase_comments(string &config)
+{
+	size_t pos;
+
+	pos = config.find('#');
+	while (pos != std::string::npos)
+	{
+		size_t pos_end;
+		pos_end = config.find('\n', pos);
+		config.erase(pos, pos_end - pos);
+		pos = config.find('#');
+	}
+}
+
+
 /*
 void WebServer::get_request(int client_fd)
 {

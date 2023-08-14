@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 09:12:14 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/11 12:53:15 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/14 11:02:03 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Server::Server(string server_config)
 {
-	//9 needs to cut "server{" + in the end "}" | size - 10 is length of string
+	//9 needs to cut "server {" + in the end "}" | size - 10 is length of string
 	server_config = server_config.substr(9, server_config.size() - 10);
 	// cout<<"\""<<server_config<<"\""<<endl;
 	//split server_config by /n to lines and 
@@ -22,10 +22,12 @@ Server::Server(string server_config)
     string line;
     vector<std::string> lines;
 
+	//split by lines
     while (getline(iss, line)) {
+		line = removeLeadingWhitespaces(line);
         lines.push_back(line);
     }
-
+	
 	for (int i = 0; i < (int)lines.size(); i++)
 	{
 		line = lines[i];
@@ -34,21 +36,104 @@ Server::Server(string server_config)
 			set_server_names(line);
 		else if (line.find("listen") == 0)
 			set_port_host(line);
-		else if (line.find("root") == 0)
-			set_root(line);
-		else if (line.find("index") == 0)
-			set_index(line);
-		else if (line.find("default_error_page") == 0)
-			//cope with error page
+		//unite lines if they are parts of location
+		/*	rules for valid location line:
+					- 3 tokens
+					- first == "location"
+					- last == "}"
+		*/
+		//location line should be only "location .... {"
+		//location part should end with separate line "}"
 		else if (line.find("location") == 0)
-			//cope with location
-		else if (line.find("max_client_bodysize") == 0)
-			//cope with max_body size
+		{
+			vector<string> tokens = get_tokens(line);
+			if (tokens.size() != 3)
+				perror("Error: invalid location line (token nums)..\n");
+			if (tokens[0] != "location")
+				perror("Error: invalid location line..\n");
+			if (tokens[2] != "{")
+				perror("Error: invalid syntax on location line..\n");
+			int j = i+1;
+			int isfound = 0;
+			//searching for last line
+			while (j < (int)lines.size())
+			{
+				if (lines[j] == "}")
+				{
+					isfound = 1;
+					break;
+				}
+				j++;
+			}
+			//string where to sum all location lines
+			string res;
+			//if we found last location line, just to make location
+			//in one string. and update i iterator
+			if (isfound)
+			{
+				for (int k = i; k <=j; k++)
+					res += lines[k];
+				i = j + 1;
+			}
+			else
+				perror("Error: syntax error in location..\n");
+			Location_t new_loc;
+			fill_location(new_loc, res);
+			locations.push_back(new_loc);
+		}
+		
+		//... somepoints
+		//if smth bad and unrecognized - error
+		else
+			perror("Error: invalid line in config..\n");
 	}
+
+
+
+
+
+	
+
+	// else if (line.find("root") == 0)
+	// 		set_root(line);
+	// 	else if (line.find("index") == 0)
+	// 		set_index(line);
+	// 	else if (line.find("default_error_page") == 0)
+	// 		//cope with error page
+	// 	else if (line.find("location") == 0)
+	// 		//cope with location
+	// 	else if (line.find("max_client_bodysize") == 0)
+	// 		//cope with max_body size
 	
 }
 
 /*============ Methods for parse and fill class vars ================*/
+
+/**************************************************
+ * 
+ *	Fill_location recieves &location struct and 
+ *	string line, parse line and fill vars 
+ *	of location
+ *
+**************************************************/
+
+void Server::fill_location(Location &loc, string loc_text)
+{
+	istringstream iss(loc_text);
+    string line;
+    vector<std::string> lines;
+
+	//split location .. {...} by lines
+    while (getline(iss, line)) {
+		line = removeLeadingWhitespaces(line);
+        lines.push_back(line);
+    }
+	//get resource from first line
+	vector<string> tokens = get_tokens(lines[0]);
+	loc.resource = tokens[1];
+	
+}
+
 
 /**************************************************
  * 
@@ -171,7 +256,7 @@ vector<string> Server::get_tokens(string line)
 }
 
 string Server::removeLeadingWhitespaces(const string& input) {
-    size_t firstNonSpace = input.find_first_not_of(" \t");
+    size_t firstNonSpace = input.find_first_not_of("\t");
     if (firstNonSpace == string::npos) {
         // The input contains only whitespace characters, return an empty string
         return "";
