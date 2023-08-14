@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 09:12:28 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/14 11:01:28 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/14 11:26:17 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ public:
 	vector<int> listeners; 				// vector of open fds for the server
 	
 	vector<string> server_names; 		// could be or not						
-	vector<pair<int, string>> port_host;// host:port storage
+	vector<pair<int, string> > port_host;// host:port storage
 	vector<Location_t> locations;		// vector of loactions
 	
 	Server(string server_config);

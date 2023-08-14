@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/14 11:00:59 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/14 11:50:34 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,58 +14,19 @@
 
 WebServer::WebServer(string &config)
 {
+	//erase comms + split servers
 	erase_comments(config);
-	//Iterating over config to extract all server{} confs
-	while (config.length() > 0)
-	{
-		string server_config = "";
-		size_t start = 0;
-		size_t end = string::npos;
-		if ((start = config.find("server {")) != string::npos)
-		{
-			//MAYBE PROBLEMS WITH INDEXES START ETC..
-			config = config.erase(0, start);
-			start = 0;
-			int counter = 1; //counter to check '{{{}}}' cases.
-			size_t close_bracket = string::npos;//string::npos cause to check if i do not find it
-			
-			//part of code to find indexes of close server brackets
-			int i = start + 8; // to take index after "server {"
-			while (i < config.length() && counter != 0)
-			{
-				if (config[i] == '{')
-					counter++;
-				else if (config[i] == '}')
-					counter--;
-				if (counter == 0) //this need to str[i] = '}' but not '\n' etc..
-					break;
-				i++;
-			}
-			if (counter == 0)
-				close_bracket = static_cast<size_t>(i);
-			end = close_bracket;
-			//write server{...} text in server_config string ONLY if we close brackets
-			// and after create new_server obj and put in servers vector
-			if (close_bracket != string::npos)
-			{
-				server_config = config.substr(start, close_bracket);
-				Server new_server(server_config); // need add server config so new_server creates
-				//TODO: here need to add check for new_server
-				//push_back() ONLY if good - need to check new_server that fileds are filled
-				servers.push_back(new_server);
-			}
-			//erase from config string all chars we checked
-			config.erase(start, end);
-		}
-		else
-			break;
-	}
+	split_servers(config);
+	//if some invalid servers didnt write - throw exc
+	if (server_config.size() != server_num)
+		throw runtime_error("Somthing with size"); //rewrite the sentence
+	
 	//we continue ONLY if we have atleast 1 server in servers vector
 	// if (servers.empty())
 	// 	std::cout<<"Error: no valid server configs"<<std::endl; // TODO: need to hanlde properly
 	// else
 	// 	cout<<"Server number is "<<servers.size()<<endl;
-	exit(EXIT_SUCCESS);
+	
 
 	
 	// listener = websocket.get_listener();
@@ -97,6 +58,87 @@ void WebServer::erase_comments(string &config)
 		config.erase(pos, pos_end - pos);
 		pos = config.find('#');
 	}
+}
+
+/**************************************************
+ * 
+ *	Split_servers() split config by server {...}
+ *	and push them into vector of string
+ *
+**************************************************/
+void WebServer::split_servers(std::string &config)
+{
+	size_t start = 0;
+	size_t end = 1;
+
+	if (config.find("server", 0) == string::npos)
+		throw runtime_error("Server did not find");
+	while (start != end && start < config.length())
+	{
+		start = find_start_server(start, config);
+		end = find_end_server(start, config);
+		if (start == end && !isspace(config[start]))
+			throw runtime_error("problem with scope");
+		server_config.push_back(config.substr(start, end - start + 1));
+		server_num++;
+		start = end + 1;
+	}
+}
+
+/**************************************************
+ * 
+ *	Find_start_server() search for "server " and
+ *	return the index of { start of server
+ *
+**************************************************/
+size_t WebServer::find_start_server(size_t start, string &config)
+{
+	size_t i;
+
+	for (i = start; config[i]; i++)
+	{
+		if (config[i] == 's')
+			break ;
+		if (!isspace(config[i]))
+			throw runtime_error("Wrong character out of server scope{}");
+	}
+	if (!config[i])
+		return (start);
+	if (config.compare(i, 6, "server") != 0)
+		throw runtime_error("Wrong character out of server scope{}");
+	i += 6;
+	while (config[i] && isspace(config[i]))
+		i++;
+	if (config[i] == '{')
+		return (i);
+	else
+		throw runtime_error("Wrong character out of server scope{}");
+}
+
+/**************************************************
+ * 
+ *	Find_end_server() search for server end and
+ *	return the index of } end of server
+ *
+**************************************************/
+size_t WebServer::find_end_server(size_t start, string &config)
+{
+	size_t	i;
+	size_t	scope;
+	
+	scope = 0;
+	for (i = start + 1; config[i]; i++)
+	{
+		if (config[i] == '{')
+			scope++;
+		if (config[i] == '}')
+		{
+			if (!scope)
+				return (i);
+			scope--;
+		}
+	}
+	return (start);
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/14 10:53:37 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/14 11:20:58 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ class WebServer
 {
 private:
 	vector<Server> servers; //if size == 0 there is no servers and return
+	vector<string> server_config;
+	size_t	server_num;
 	struct pollfd *pollfds;
 	//nfds_t nfds;
 	void connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds);
@@ -46,6 +48,9 @@ public:
 	void launch_server();
 
 	void erase_comments(string &config);
+	void split_servers(string &config);
+	size_t find_start_server(size_t start, string &config);
+	size_t find_end_server (size_t start, string &config);
 	//~WebServer(); //free struct pollfds
 };
 

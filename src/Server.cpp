@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 09:12:14 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/14 11:02:03 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/14 11:25:44 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,23 +198,23 @@ void Server::set_port_host(string line)
  *	- directory should open
  *
 **************************************************/
-void Server::set_root(string line)
-{
-	vector<string> tokens = get_tokens(line);
-	if (root != "")
-		perror("Error: not unique root..\n");
-	if (tokens[0] != "root")
-		perror("Error: invalid root line..\n");//TODO: hanlde valid return
-	if (tokens.size() != 2)
-		perror("Error: invalid root line (tokens num)..\n");
-	//check whether it is directory
-	//Maybe we dont need to check here
-	DIR* dir = opendir(tokens[1].c_str());
-    if (dir == NULL)
-        perror("Error: invalid directory in root..\n");
-    closedir(dir);
-	root = tokens[1];
-}
+// void Server::set_root(string line)
+// {
+// 	vector<string> tokens = get_tokens(line);
+// 	if (root != "")
+// 		perror("Error: not unique root..\n");
+// 	if (tokens[0] != "root")
+// 		perror("Error: invalid root line..\n");//TODO: hanlde valid return
+// 	if (tokens.size() != 2)
+// 		perror("Error: invalid root line (tokens num)..\n");
+// 	//check whether it is directory
+// 	//Maybe we dont need to check here
+// 	DIR* dir = opendir(tokens[1].c_str());
+//     if (dir == NULL)
+//         perror("Error: invalid directory in root..\n");
+//     closedir(dir);
+// 	root = tokens[1];
+// }
 
 /**************************************************
  * 
@@ -225,16 +225,16 @@ void Server::set_root(string line)
  *	- tokens size should be 2
  *
 **************************************************/
-void Server::set_index(string line)
-{
-	vector<string> tokens = get_tokens(line);
-	if (indexes.size() > 0)
-		perror("Error: not unique index..\n");
-	if (tokens[0] != "index")
-		perror("Error: invalid index line..\n");//TODO: hanlde valid return
-	for (size_t i = 1; i < tokens.size(); i++)
-		indexes.push_back(tokens[i]);	
-}
+// void Server::set_index(string line)
+// {
+// 	vector<string> tokens = get_tokens(line);
+// 	if (indexes.size() > 0)
+// 		perror("Error: not unique index..\n");
+// 	if (tokens[0] != "index")
+// 		perror("Error: invalid index line..\n");//TODO: hanlde valid return
+// 	for (size_t i = 1; i < tokens.size(); i++)
+// 		indexes.push_back(tokens[i]);	
+// }
 
 vector<string> Server::get_tokens(string line)
 {
