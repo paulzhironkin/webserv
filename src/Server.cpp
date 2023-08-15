@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 09:12:14 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/15 18:18:51 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/15 18:25:09 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ Server::Server(string server_config)
 		perror("recv error\n");
 		exit(EXIT_FAILURE);
 	}
-	else if (nbytes > 0)
+	if (nbytes > 0)
 	{
 		Request req(buf);
 		if (!req.valid())
