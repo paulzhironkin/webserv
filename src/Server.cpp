@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 09:12:14 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/14 11:25:44 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/15 18:18:51 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,62 +30,30 @@ Server::Server(string server_config)
 	
 	for (int i = 0; i < (int)lines.size(); i++)
 	{
-		line = lines[i];
-		//detecting type of string
-		if (line.find("server_name") == 0) // need to check that only 1 time
-			set_server_names(line);
-		else if (line.find("listen") == 0)
-			set_port_host(line);
-		//unite lines if they are parts of location
-		/*	rules for valid location line:
-					- 3 tokens
-					- first == "location"
-					- last == "}"
-		*/
-		//location line should be only "location .... {"
-		//location part should end with separate line "}"
-		else if (line.find("location") == 0)
-		{
-			vector<string> tokens = get_tokens(line);
-			if (tokens.size() != 3)
-				perror("Error: invalid location line (token nums)..\n");
-			if (tokens[0] != "location")
-				perror("Error: invalid location line..\n");
-			if (tokens[2] != "{")
-				perror("Error: invalid syntax on location line..\n");
-			int j = i+1;
-			int isfound = 0;
-			//searching for last line
-			while (j < (int)lines.size())
-			{
-				if (lines[j] == "}")
-				{
-					isfound = 1;
-					break;
-				}
-				j++;
-			}
-			//string where to sum all location lines
-			string res;
-			//if we found last location line, just to make location
-			//in one string. and update i iterator
-			if (isfound)
-			{
-				for (int k = i; k <=j; k++)
-					res += lines[k];
-				i = j + 1;
-			}
-			else
-				perror("Error: syntax error in location..\n");
-			Location_t new_loc;
-			fill_location(new_loc, res);
-			locations.push_back(new_loc);
-		}
+		perror("recv error\n");
+		exit(EXIT_FAILURE);
+	}
+	else if (nbytes > 0)
+	{
+		Request req(buf);
+		if (!req.valid())
+			return ;
+		Response resp(200);
+		resp.set_content_type("text/plain");
+		resp.set_body("Hello, world!");
+		std:: string response_message = resp.generate_response();
+
+		int message_len = strlen(response_message.c_str());
 		
-		//... somepoints
-		//if smth bad and unrecognized - error
-		else
-			perror("Error: invalid line in config..\n");
+		int bytes_sent = send(client_fd, response_message.c_str(), message_len, 0);
+		if (bytes_sent == -1) {
+			perror("Send error");
+		} else {
+			std::cout<<"\033[92m";
+			std::cout<<"Sent "<<bytes_sent<<" bytes:"<<std::endl;
+			std::cout<<response_message<<std::endl<<std::endl;
+			std::cout<<RESET;
+		}
 	}
 
 

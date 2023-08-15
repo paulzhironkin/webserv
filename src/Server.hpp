@@ -6,13 +6,17 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 09:12:28 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/14 11:26:17 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/08/15 18:17:50 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include "Socket.hpp"
+#include "Client.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
 #include <vector>
 #include "Socket.hpp"
 #include <string>

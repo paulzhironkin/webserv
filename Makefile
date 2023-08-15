@@ -6,7 +6,11 @@ STD = -std=c++98
 
 SRC_PATH = src/
 
+<<<<<<< HEAD
 SRCS = main.cpp WebServer.cpp Server.cpp Request.cpp Socket.cpp 
+=======
+SRCS = main.cpp Socket.cpp Server.cpp Request.cpp Response.cpp
+>>>>>>> f6c5c02f513c1401bd19068fcdfbb819d3104672
 
 OBJS = $(addprefix $(SRC_PATH), $(SRCS:.cpp=.o))
 
