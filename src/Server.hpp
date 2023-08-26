@@ -19,27 +19,25 @@
 #include "Response.hpp"
 #include <vector>
 #include "Socket.hpp"
-#include <string>
-#include <utility>
-#include <sstream>
-#include <dirent.h>
+// #include "WebServer.hpp"
+
 
 using namespace std;
 
 //TODO: chek for "/" location which is base mandatory! location
 //TODO: not foget that open bracket is alwais in the end of first line
 
-typedef struct Location {
-	string resource; 					// resource in location description
-	string try_files;					// need to parse it also
-	vector<string> allowed_methods; 	// methods allow to recieve
-	vector<string> indexes; 			// main pages
-	string redirection_path; 			// path for redirection
-	string root;						// root directory to find files out
-	string default_error_page; 			// defualt error page
-	int autoindex; 						// 0 - OFF , 1 - ON
-	int max_client_body; 				// max size for body in request
-}	Location_t;
+// typedef struct Location {
+// 	string resource; 					// resource in location description
+// 	string try_files;					// need to parse it also
+// 	vector<string> allowed_methods; 	// methods allow to recieve
+// 	vector<string> indexes; 			// main pages
+// 	string redirection_path; 			// path for redirection
+// 	string root;						// root directory to find files out
+// 	string default_error_page; 			// defualt error page
+// 	int autoindex; 						// 0 - OFF , 1 - ON
+// 	int max_client_body; 				// max size for body in request
+// }	Location_t;
 
 class Server
 {
@@ -49,7 +47,7 @@ public:
 	
 	vector<string> server_names; 		// could be or not						
 	vector<pair<int, string> > port_host;// host:port storage
-	vector<Location_t> locations;		// vector of loactions
+	// vector<Location_t> locations;		// vector of loactions
 	
 	Server(string server_config);
 private:
@@ -57,7 +55,7 @@ private:
 	void set_port_host(string line);
 	void set_root(string line);
 	void set_index(string index);
-	void fill_location(Location_t &loc, string loc_text);
+	// void fill_location(Location_t &loc, string loc_text);
 
 	
 	

@@ -12,32 +12,36 @@
 
 #include "WebServer.hpp"
 
-WebServer::WebServer(string &config)
+WebServer::WebServer(std::vector<ServerConfig> configs)
 {
-	//erase comms + split servers
-	erase_comments(config);
-	split_servers(config);
+	// split_servers(config);
 	//if some invalid servers didnt write - throw exc
-	if (server_config.size() != server_num)
-		throw runtime_error("Somthing with size"); //rewrite the sentence
+	// if (server_config.size() != server_num)
+	// 	throw runtime_error("Somthing with size"); //rewrite the sentence
 	
-	//we continue ONLY if we have atleast 1 server in servers vector
-	// if (servers.empty())
-	// 	std::cout<<"Error: no valid server configs"<<std::endl; // TODO: need to hanlde properly
-	// else
-	// 	cout<<"Server number is "<<servers.size()<<endl;
+	// we continue ONLY if we have atleast 1 server in servers vector
+	std::vector<ServerConfig>::iterator it = configs.begin();
+	while (it != configs.end()) {
+		servers.push_back(*it);
+		++it;
+	}
+
+	if (servers.empty())
+		std::cout<<"Error: no valid server configs"<<std::endl; // TODO: need to hanlde properly
+	else
+		cout<<"Server number is "<<servers.size()<<endl;
 	
 
 	
-	// listener = websocket.get_listener();
-	// if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
-	// 	perror("*Poolfds malloc error\n");
-	// 	exit(EXIT_FAILURE);
-	// }
-	// pollfds -> fd = listener;
-    // pollfds -> events = POLLIN;
-    // pollfds -> revents = 0;
-	// nfds = 1;
+	listener = websocket.get_listener();
+	if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
+		perror("*Poolfds malloc error\n");
+		exit(EXIT_FAILURE);
+	}
+	pollfds -> fd = listener;
+    pollfds -> events = POLLIN;
+    pollfds -> revents = 0;
+	nfds = 1;
 }
 
 /**************************************************
@@ -46,19 +50,19 @@ WebServer::WebServer(string &config)
  *	with # at start from config
  *
 **************************************************/
-void WebServer::erase_comments(string &config)
-{
-	size_t pos;
+// void WebServer::erase_comments(string &config)
+// {
+// 	size_t pos;
 
-	pos = config.find('#');
-	while (pos != std::string::npos)
-	{
-		size_t pos_end;
-		pos_end = config.find('\n', pos);
-		config.erase(pos, pos_end - pos);
-		pos = config.find('#');
-	}
-}
+// 	pos = config.find('#');
+// 	while (pos != std::string::npos)
+// 	{
+// 		size_t pos_end;
+// 		pos_end = config.find('\n', pos);
+// 		config.erase(pos, pos_end - pos);
+// 		pos = config.find('#');
+// 	}
+// }
 
 /**************************************************
  * 
@@ -66,24 +70,24 @@ void WebServer::erase_comments(string &config)
  *	and push them into vector of string
  *
 **************************************************/
-void WebServer::split_servers(std::string &config)
-{
-	size_t start = 0;
-	size_t end = 1;
+// void WebServer::split_servers(std::string &config)
+// {
+// 	size_t start = 0;
+// 	size_t end = 1;
 
-	if (config.find("server", 0) == string::npos)
-		throw runtime_error("Server did not find");
-	while (start != end && start < config.length())
-	{
-		start = find_start_server(start, config);
-		end = find_end_server(start, config);
-		if (start == end && !isspace(config[start]))
-			throw runtime_error("problem with scope");
-		server_config.push_back(config.substr(start, end - start + 1));
-		server_num++;
-		start = end + 1;
-	}
-}
+// 	if (config.find("server", 0) == string::npos)
+// 		throw runtime_error("Server did not found");
+// 	while (start != end && start < config.length())
+// 	{
+// 		start = find_start_server(start, config);
+// 		end = find_end_server(start, config);
+// 		if (start == end && !isspace(config[start]))
+// 			throw runtime_error("problem with scope");
+// 		server_config.push_back(config.substr(start, end - start + 1));
+// 		server_num++;
+// 		start = end + 1;
+// 	}
+// }
 
 /**************************************************
  * 
@@ -91,29 +95,29 @@ void WebServer::split_servers(std::string &config)
  *	return the index of { start of server
  *
 **************************************************/
-size_t WebServer::find_start_server(size_t start, string &config)
-{
-	size_t i;
+// size_t WebServer::find_start_server(size_t start, string &config)
+// {
+// 	size_t i;
 
-	for (i = start; config[i]; i++)
-	{
-		if (config[i] == 's')
-			break ;
-		if (!isspace(config[i]))
-			throw runtime_error("Wrong character out of server scope{}");
-	}
-	if (!config[i])
-		return (start);
-	if (config.compare(i, 6, "server") != 0)
-		throw runtime_error("Wrong character out of server scope{}");
-	i += 6;
-	while (config[i] && isspace(config[i]))
-		i++;
-	if (config[i] == '{')
-		return (i);
-	else
-		throw runtime_error("Wrong character out of server scope{}");
-}
+// 	for (i = start; config[i]; i++)
+// 	{
+// 		if (config[i] == 's')
+// 			break ;
+// 		if (!isspace(config[i]))
+// 			throw runtime_error("Wrong character out of server scope{}");
+// 	}
+// 	if (!config[i])
+// 		return (start);
+// 	if (config.compare(i, 6, "server") != 0)
+// 		throw runtime_error("Wrong character out of server scope{}");
+// 	i += 6;
+// 	while (config[i] && isspace(config[i]))
+// 		i++;
+// 	if (config[i] == '{')
+// 		return (i);
+// 	else
+// 		throw runtime_error("Wrong character out of server scope{}");
+// }
 
 /**************************************************
  * 
@@ -121,28 +125,28 @@ size_t WebServer::find_start_server(size_t start, string &config)
  *	return the index of } end of server
  *
 **************************************************/
-size_t WebServer::find_end_server(size_t start, string &config)
-{
-	size_t	i;
-	size_t	scope;
+// size_t WebServer::find_end_server(size_t start, string &config)
+// {
+// 	size_t	i;
+// 	size_t	scope;
 	
-	scope = 0;
-	for (i = start + 1; config[i]; i++)
-	{
-		if (config[i] == '{')
-			scope++;
-		if (config[i] == '}')
-		{
-			if (!scope)
-				return (i);
-			scope--;
-		}
-	}
-	return (start);
-}
+// 	scope = 0;
+// 	for (i = start + 1; config[i]; i++)
+// 	{
+// 		if (config[i] == '{')
+// 			scope++;
+// 		if (config[i] == '}')
+// 		{
+// 			if (!scope)
+// 				return (i);
+// 			scope--;
+// 		}
+// 	}
+// 	return (start);
+// }
 
 
-/*
+
 void WebServer::get_request(int client_fd)
 {
 	char buf[BUF_SIZE];
@@ -284,5 +288,3 @@ WebServer::~WebServer()
 			close(fd);
 	}
 }
-
-*/

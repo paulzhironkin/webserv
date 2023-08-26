@@ -13,10 +13,23 @@
 #ifndef WEBSERVER_HPP
 #define WEBSERVER_HPP
 
+
 #include "Client.hpp"
-//#include "Request.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
+#include "Socket.hpp"
 #include <iostream>
+#include <sys/stat.h>
+#include <fstream>
+#include <string>
+#include <utility>
+#include <sstream>
+#include <dirent.h>
 #include "Server.hpp"
+#include "ConfigParser.hpp"
+#include "ServerConfig.hpp"
+#include "Location.hpp"
+#include "ConfigFile.hpp"
 #include <vector>
 
 // ANSI escape code for text colors
@@ -32,26 +45,30 @@
 
 using namespace std;
 
+
 class WebServer
 {
 private:
-	vector<Server> servers; //if size == 0 there is no servers and return
-	vector<string> server_config;
+	std::vector<ServerConfig> servers; //if size == 0 there is no servers and return
+// 	vector<string> server_config;
 	size_t	server_num;
 	struct pollfd *pollfds;
-	//nfds_t nfds;
+	int		listener;
+	Socket websocket;
+	nfds_t nfds;
 	void connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds);
 	void get_request(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
 public:
-	WebServer(string &config);
+	WebServer(std::vector<ServerConfig> configs);
 	void launch_server();
 
-	void erase_comments(string &config);
-	void split_servers(string &config);
-	size_t find_start_server(size_t start, string &config);
-	size_t find_end_server (size_t start, string &config);
-	//~WebServer(); //free struct pollfds
+// 	void erase_comments(string &config);
+// 	void split_servers(string &config);
+// 	size_t find_start_server(size_t start, string &config);
+// 	size_t find_end_server (size_t start, string &config);
+	~WebServer(); //free struct pollfds
 };
+
 
 #endif
