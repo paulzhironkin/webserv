@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 13:57:50 by latahbah          #+#    #+#             */
-/*   Updated: 2023/09/22 15:12:13 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/09/22 19:53:26 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 			cluster.createCluster(config);
 			cluster.print();
 			WebServer webserv(cluster.getServers());
-			webserv.launch_server();
+			// webserv.launch_server();
     	}
 		catch (std::exception &e) {
 			std::cerr << e.what() << std::endl;

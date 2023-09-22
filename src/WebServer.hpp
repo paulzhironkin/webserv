@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/09/22 15:37:11 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/09/22 20:16:48 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ private:
 	size_t	server_num;
 	struct pollfd *pollfds;
 	int		listener;
-	std::vector<Socket> websockets;
+	std::vector<Socket *> websockets;
 	nfds_t nfds;
 	void connect_client(int listener, struct pollfd *pollfds, nfds_t &numfds, int &maxfds);
 	void get_request(int client_fd);

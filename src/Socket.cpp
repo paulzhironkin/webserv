@@ -6,13 +6,13 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:59:15 by latahbah          #+#    #+#             */
-/*   Updated: 2023/09/22 15:53:31 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/09/22 20:09:28 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
 
-Socket::Socket(const char *port)
+Socket::Socket(const char *port) : port(port)
 {
     std::cout<<"  Setting up socket..."<<std::endl; 
 	//Set up hints to find all addresses to add to socket
@@ -24,7 +24,7 @@ Socket::Socket(const char *port)
 	struct addrinfo *result;		/* starting rointer for getaddrinfo return structsv*/
 	int s;
     std::cout<<"  Binding with port "<<port<<"\n";
-	if ((s = getaddrinfo (NULL, port, &hints, &result)) != 0) {
+	if ((s = getaddrinfo (NULL, this->port, &hints, &result)) != 0) {
         perror("Getaddrinfo error\n");
         exit (EXIT_FAILURE);
     }
@@ -54,11 +54,14 @@ Socket::Socket(const char *port)
 		perror("Listen error\n");
 		exit(EXIT_FAILURE);
 	}
-    std::cout<<"  Socket is ready for connection."<<std::endl;
+    std::cout<<"  Socket is ready for connection on port "<<port<<std::endl;
 }
 
 Socket::~Socket()
 {
+    std::cout<<RED;
+    std::cout<<"Close socket on port "<<port<<"\n";
+    std::cout<<RESET;
     if (close(listener) == -1) {
         perror("Close error\n");
         exit(EXIT_FAILURE);
