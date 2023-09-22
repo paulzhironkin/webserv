@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/14 11:20:58 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/09/22 15:37:11 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 #include "Location.hpp"
 #include "ConfigFile.hpp"
 #include <vector>
+#include <cstdio>
+#include <cstdint>
 
 // ANSI escape code for text colors
 #define RESET   "\033[0m"
@@ -54,9 +56,9 @@ private:
 	size_t	server_num;
 	struct pollfd *pollfds;
 	int		listener;
-	Socket websocket;
+	std::vector<Socket> websockets;
 	nfds_t nfds;
-	void connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds);
+	void connect_client(int listener, struct pollfd *pollfds, nfds_t &numfds, int &maxfds);
 	void get_request(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
 public:

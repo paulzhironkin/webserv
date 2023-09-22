@@ -6,42 +6,79 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/14 11:50:34 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/09/22 15:49:00 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebServer.hpp"
 
-WebServer::WebServer(std::vector<ServerConfig> configs)
+WebServer::WebServer(std::vector<ServerConfig> input_servers) : servers(input_servers)
 {
-	// split_servers(config);
-	//if some invalid servers didnt write - throw exc
-	// if (server_config.size() != server_num)
-	// 	throw runtime_error("Somthing with size"); //rewrite the sentence
-	
-	// we continue ONLY if we have atleast 1 server in servers vector
-	std::vector<ServerConfig>::iterator it = configs.begin();
-	while (it != configs.end()) {
-		servers.push_back(*it);
-		++it;
-	}
-
-	if (servers.empty())
-		std::cout<<"Error: no valid server configs"<<std::endl; // TODO: need to hanlde properly
-	else
-		cout<<"Server number is "<<servers.size()<<endl;
-	
-
-	
-	listener = websocket.get_listener();
-	if ((pollfds = (struct pollfd *)malloc(NUM_FDS * sizeof (struct pollfd))) == NULL){
+	nfds = 0;
+	if ((pollfds = (struct pollfd *)malloc((server_num + NUM_FDS) * sizeof (struct pollfd))) == NULL){
 		perror("*Poolfds malloc error\n");
 		exit(EXIT_FAILURE);
 	}
-	pollfds -> fd = listener;
-    pollfds -> events = POLLIN;
-    pollfds -> revents = 0;
-	nfds = 1;
+	for (size_t i = 0; i < servers.size(); ++i)
+	{
+		uint16_t tmp = servers[i].getPort();
+		char buffer[6];
+		snprintf(buffer, sizeof(buffer), "%u", tmp);
+		const char *port = buffer;
+		Socket new_socket(port);
+		websockets.push_back(new_socket);
+		
+		listener = new_socket.get_listener();
+		(pollfds + i) -> fd = listener;
+		(pollfds + i) -> events = POLLIN;
+		(pollfds + i) -> revents = 0;
+		nfds += 1;
+	}
+	std::cout<<"nfds = "<<nfds<<"\n";
+	std::cout<<"pollfds[0].fd = "<<pollfds[0].fd<<"\n";
+	
+}
+
+void WebServer::launch_server()
+{
+	std::cout<<"  Setting up server..."<<std::endl;
+	//nfds_t nfds = 0; //number of pollfds structs passed in poll()
+    int maxfds = NUM_FDS; //max fds is used to realloc pollfds array of structs
+	
+	std::cout<<GREEN;
+	std::cout<<"[WEBSERV]Waiting for connections.."<<std::endl;
+	std::cout<<RESET;
+	std::cout<<"pollfds[0].fd = "<<pollfds[0].fd<<"\n";
+	while (true)
+	{
+		// std::cout<<"Big while\n";
+		//update nfds to poll all fds in pollfds
+		if (poll (pollfds, nfds, 1000) == -1){
+			perror("Poll error\n");
+			exit(EXIT_FAILURE);
+		}
+		//in cycle check for ready fds
+		for (int fd = 0; fd < static_cast<int>(nfds + 1); fd++)
+		{
+			// std::cout<<POLLIN<<"\n";
+			// std::cout<<"\tcheck for (pollfds + fd) -> fd ="<<(pollfds + fd) -> fd<<"\n";
+			if ((pollfds + fd) -> fd <= 0) //if fd < 0 - it is inactive
+				continue;
+			//flag POLLIN means fd ready for reading
+			if (((pollfds + fd)->revents & POLLIN))
+			{
+				std::cout<<"\t\tFound some ready socket\n\n";
+				if ((pollfds + fd) -> fd < server_num) // request for new connection
+				{
+                    connect_client(listener, pollfds, nfds, maxfds);
+                }
+				else //getting info from connection
+				{
+					get_request((pollfds + fd)->fd); // TODO: split it to get_request->parse_reqiest->send response
+				}
+			}
+		}
+	}
 }
 
 /**************************************************
@@ -193,7 +230,7 @@ void WebServer::get_request(int client_fd)
 	}
 }
 
-void WebServer::connect_client(int listener, struct pollfd *pollfds, int &numfds, int &maxfds)
+void WebServer::connect_client(int listener, struct pollfd *pollfds, nfds_t &nfds, int &maxfds)
 {
 	int fd_new;
 	struct sockaddr_storage client_saddr;
@@ -206,7 +243,7 @@ void WebServer::connect_client(int listener, struct pollfd *pollfds, int &numfds
 		exit(EXIT_FAILURE);
 	}
 	// add fd_new to pollfds
-	if (numfds == maxfds) { // create space
+	if (nfds == maxfds) { // create space
 		if ((pollfds = (struct pollfd *)realloc(pollfds, (maxfds + NUM_FDS) * sizeof (struct pollfd))) == NULL)
 		{
 			perror("Realloc error\n");
@@ -214,53 +251,16 @@ void WebServer::connect_client(int listener, struct pollfd *pollfds, int &numfds
 		}
 		maxfds += NUM_FDS;
 	}
-	numfds++; //update counter of fds in pollfds
+	nfds++; //update counter of fds in pollfds
 	//write info about fd in pollfds
-	(pollfds + numfds - 1) -> fd = fd_new;
-	(pollfds + numfds - 1) -> events = POLLIN;
-	(pollfds + numfds - 1) -> revents = 0;
+	(pollfds + nfds - 1) -> fd = fd_new;
+	(pollfds + nfds - 1) -> events = POLLIN;
+	(pollfds + nfds - 1) -> revents = 0;
 	connection_info(fd_new, client_saddr);
 	
 }
 
-void WebServer::launch_server()
-{
-	std::cout<<"  Setting up server..."<<std::endl;
-	//nfds_t nfds = 0; //number of pollfds structs passed in poll()
-    int maxfds = NUM_FDS; //max fds is used to realloc pollfds array of structs
-	int numfds = 1; //cur number of fds in pollfds (1 is because listener is already added in constructor
 
-	std::cout<<GREEN;
-	std::cout<<"[WEBSERV]Waiting for connections.."<<std::endl;
-	std::cout<<RESET;
-	while (true)
-	{
-		//update nfds to poll all fds in pollfds
-		nfds = numfds;
-		if (poll (pollfds, nfds, 1000) == -1){
-			perror("Poll error\n");
-			exit(EXIT_FAILURE);
-		}
-		//in cycle check for ready fds
-		for (int fd = 0; fd < static_cast<int>(nfds + 1); fd++)
-		{
-			if ((pollfds + fd) -> fd <= 0) //if fd < 0 - it is inactive
-				continue;
-			//flag POLLIN means fd ready for reading
-			if (((pollfds + fd) -> revents & POLLIN) == POLLIN)
-			{
-				if ((pollfds + fd) -> fd == listener) // request for new connection
-				{
-                    connect_client(listener, pollfds, numfds, maxfds);
-                }
-				else //getting info from connection
-				{
-					get_request((pollfds + fd)->fd); // TODO: split it to get_request->parse_reqiest->send response
-				}
-			}
-		}
-	}
-}
 
 void WebServer::connection_info(int client_fd, struct sockaddr_storage client_saddr)
 {

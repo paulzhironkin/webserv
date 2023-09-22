@@ -6,13 +6,13 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/02 14:59:15 by latahbah          #+#    #+#             */
-/*   Updated: 2023/08/03 14:15:49 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/09/22 15:53:31 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Socket.hpp"
 
-Socket::Socket()
+Socket::Socket(const char *port)
 {
     std::cout<<"  Setting up socket..."<<std::endl; 
 	//Set up hints to find all addresses to add to socket
@@ -23,7 +23,8 @@ Socket::Socket()
     hints.ai_flags = AI_PASSIVE;    /* for wildcard IP address */
 	struct addrinfo *result;		/* starting rointer for getaddrinfo return structsv*/
 	int s;
-	if ((s = getaddrinfo (NULL, PORT, &hints, &result)) != 0) {
+    std::cout<<"  Binding with port "<<port<<"\n";
+	if ((s = getaddrinfo (NULL, port, &hints, &result)) != 0) {
         perror("Getaddrinfo error\n");
         exit (EXIT_FAILURE);
     }
