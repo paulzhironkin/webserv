@@ -32,7 +32,7 @@
 #include "ConfigFile.hpp"
 #include <vector>
 #include <cstdio>
-#include <cstdint>
+// #include <cstdint>
 
 // ANSI escape code for text colors
 #define RESET   "\033[0m"
@@ -59,6 +59,9 @@ private:
 	void connect_client(int listener, struct pollfd *pollfds, nfds_t &numfds);
 	void get_request(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
+	ServerConfig getServerConfigByPort(int port) const;
+	std::string loadIndexContent(const ServerConfig& serverConfig) const;
+	
 public:
 	WebServer(std::vector<ServerConfig> configs);
 	void launch_server();

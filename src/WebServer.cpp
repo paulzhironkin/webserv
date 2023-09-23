@@ -85,12 +85,33 @@ void WebServer::get_request(int client_fd)
 	else if (nbytes > 0)
 	{
 		Request req(buf);
-		if (!req.valid())
-			return ;
-		const char *response_message = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello, World";
-		int message_len = strlen(response_message);
+		Response resp(200);
+
+		if (!req.valid()){
+			resp.set_status(404);
+			resp.set_content_type("text/plain");
+			resp.set_body("Poshel nahui!");
+			// return ;
+		} else {
+			req.print_info();
+			resp.set_content_type("text/plain");
+			ServerConfig serverConfig = getServerConfigByPort(req.getPort());
+			if (!serverConfig.getRoot().empty()) // Проверка на пустой сервер
+            {
+                // std::string indexPage = serverConfig.getIndex();
+                // Загрузка содержимого indexPage и установка его как тела ответа
+                std::string indexContent = loadIndexContent(serverConfig);
+                resp.set_body(indexContent);
+            }
+            else
+            {
+                resp.set_body("Invalid server configuration(Poshel nahyi)");
+            }
+		}	
 		
-		int bytes_sent = send(client_fd, response_message, message_len, 0);
+		std:: string response_message = resp.generate_response();
+		int message_len = strlen(response_message.c_str());
+		int bytes_sent = send(client_fd, response_message.c_str(), message_len, 0);
 		if (bytes_sent == -1) {
 			perror("Send error");
 		} else {
@@ -181,3 +202,28 @@ WebServer::~WebServer()
 			close(fd);
 	}
 }
+
+ServerConfig WebServer::getServerConfigByPort(int port) const {
+    for (size_t i = 0; i < servers.size(); ++i) {
+    	const ServerConfig& serverConfig = servers[i];
+        if (serverConfig.getPort() == port) {
+            return serverConfig; // Возвращаем копию объекта
+        }
+    }
+    // Возвращаем пустой объект ServerConfig, если не нашли
+    return ServerConfig();
+}
+
+
+std::string WebServer::loadIndexContent(const ServerConfig& serverConfig) const {
+    ServerConfig nonConstServerConfig = serverConfig; // Создаем неконстантную копию объекта
+    std::string indexPath = nonConstServerConfig.getRoot() + "/" + nonConstServerConfig.getIndex();
+    std::ifstream indexFile(indexPath.c_str());
+    if (indexFile) {
+        std::stringstream buffer;
+        buffer << indexFile.rdbuf();
+        return buffer.str();
+    }
+    return ""; // Возвращаем пустую строку в случае ошибки чтения файла
+}
+

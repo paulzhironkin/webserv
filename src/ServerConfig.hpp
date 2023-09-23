@@ -57,7 +57,7 @@ class ServerConfig
 		int isValidLocation(Location &location) const;
 
 		const std::string &getServerName();
-		const uint16_t &getPort();
+		const uint16_t &getPort() const;
 		const in_addr_t &getHost();
 		const size_t &getClientMaxBodySize();
 		const std::vector<Location> &getLocations();

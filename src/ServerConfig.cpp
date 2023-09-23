@@ -467,10 +467,11 @@ const in_addr_t &ServerConfig::getHost()
 	return (this->_host);
 }
 
-const uint16_t &ServerConfig::getPort()
+const uint16_t &ServerConfig::getPort() const
 {
 	return (this->_port);
 }
+
 
 const size_t &ServerConfig::getClientMaxBodySize()
 {
