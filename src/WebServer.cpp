@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/09/22 20:19:06 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/09/22 20:39:33 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 WebServer::WebServer(std::vector<ServerConfig> input_servers) : servers(input_servers)
 {
 	nfds = 0;
-	if ((pollfds = (struct pollfd *)malloc((server_num + NUM_FDS) * sizeof (struct pollfd))) == NULL){
+	maxfds = NUM_FDS;
+	if ((pollfds = (struct pollfd *)malloc((servers.size() + NUM_FDS) * sizeof (struct pollfd))) == NULL){
 		perror("*Poolfds malloc error\n");
 		exit(EXIT_FAILURE);
 	}
@@ -28,24 +29,22 @@ WebServer::WebServer(std::vector<ServerConfig> input_servers) : servers(input_se
 		Socket *new_socket = new Socket(port);
 		websockets.push_back(new_socket);
 		
-		listener = new_socket->get_listener();
+		int listener = new_socket->get_listener();
 		(pollfds + i) -> fd = listener;
 		(pollfds + i) -> events = POLLIN;
 		(pollfds + i) -> revents = 0;
 		nfds += 1;
-		
 	}
-
-	std::cout<<"  Setting up server..."<<std::endl;
-	//nfds_t nfds = 0; //number of pollfds structs passed in poll()
-    int maxfds = NUM_FDS; //max fds is used to realloc pollfds array of structs
 	
+}
+
+void WebServer::launch_server()
+{
 	std::cout<<GREEN;
 	std::cout<<"[WEBSERV]Waiting for connections.."<<std::endl;
 	std::cout<<RESET;
 	while (true)
 	{
-		// std::cout<<"Big while\n";
 		//update nfds to poll all fds in pollfds
 		if (poll (pollfds, nfds, 1000) == -1){
 			perror("Poll error\n");
@@ -54,171 +53,24 @@ WebServer::WebServer(std::vector<ServerConfig> input_servers) : servers(input_se
 		//in cycle check for ready fds
 		for (int fd = 0; fd < static_cast<int>(nfds + 1); fd++)
 		{
-			// std::cout<<POLLIN<<"\n";
-			// std::cout<<"\tcheck for (pollfds + fd) -> fd ="<<(pollfds + fd) -> fd<<"\n";
 			if ((pollfds + fd) -> fd <= 0) //if fd < 0 - it is inactive
 				continue;
 			//flag POLLIN means fd ready for reading
 			if (((pollfds + fd)->revents & POLLIN))
 			{
-				if ((pollfds + fd) -> fd < (int)servers.size() + 3) // request for new connection
+				// request for new connection: check if fd from socket
+				if ((pollfds + fd) -> fd < (int)servers.size() + 3)
 				{
-                    connect_client((pollfds + fd) -> fd, pollfds, nfds, maxfds);
+                    connect_client((pollfds + fd) -> fd, pollfds, nfds);
                 }
-				else //getting info from connection
+				else //getting info from connection: if fd from client
 				{
 					get_request((pollfds + fd)->fd); // TODO: split it to get_request->parse_reqiest->send response
 				}
 			}
 		}
 	}
-	
 }
-
-void WebServer::launch_server()
-{
-	// std::cout<<"  Setting up server..."<<std::endl;
-	// //nfds_t nfds = 0; //number of pollfds structs passed in poll()
-    // int maxfds = NUM_FDS; //max fds is used to realloc pollfds array of structs
-	
-	// std::cout<<GREEN;
-	// std::cout<<"[WEBSERV]Waiting for connections.."<<std::endl;
-	// std::cout<<RESET;
-	// // std::cout<<"pollfds[0].fd = "<<pollfds[0].fd<<"\n";
-	// while (true)
-	// {
-	// 	// std::cout<<"Big while\n";
-	// 	//update nfds to poll all fds in pollfds
-	// 	if (poll (pollfds, nfds, 1000) == -1){
-	// 		perror("Poll error\n");
-	// 		exit(EXIT_FAILURE);
-	// 	}
-	// 	//in cycle check for ready fds
-	// 	for (int fd = 0; fd < static_cast<int>(nfds + 1); fd++)
-	// 	{
-	// 		// std::cout<<POLLIN<<"\n";
-	// 		// std::cout<<"\tcheck for (pollfds + fd) -> fd ="<<(pollfds + fd) -> fd<<"\n";
-	// 		if ((pollfds + fd) -> fd <= 0) //if fd < 0 - it is inactive
-	// 			continue;
-	// 		//flag POLLIN means fd ready for reading
-	// 		if (((pollfds + fd)->revents & POLLIN))
-	// 		{
-	// 			std::cout<<"\t\tFound some ready socket\n\n";
-	// 			if ((pollfds + fd) -> fd < server_num) // request for new connection
-	// 			{
-    //                 connect_client(listener, pollfds, nfds, maxfds);
-    //             }
-	// 			else //getting info from connection
-	// 			{
-	// 				get_request((pollfds + fd)->fd); // TODO: split it to get_request->parse_reqiest->send response
-	// 			}
-	// 		}
-	// 	}
-	// }
-}
-
-/**************************************************
- * 
- *	Erase_comments() delete lines 
- *	with # at start from config
- *
-**************************************************/
-// void WebServer::erase_comments(string &config)
-// {
-// 	size_t pos;
-
-// 	pos = config.find('#');
-// 	while (pos != std::string::npos)
-// 	{
-// 		size_t pos_end;
-// 		pos_end = config.find('\n', pos);
-// 		config.erase(pos, pos_end - pos);
-// 		pos = config.find('#');
-// 	}
-// }
-
-/**************************************************
- * 
- *	Split_servers() split config by server {...}
- *	and push them into vector of string
- *
-**************************************************/
-// void WebServer::split_servers(std::string &config)
-// {
-// 	size_t start = 0;
-// 	size_t end = 1;
-
-// 	if (config.find("server", 0) == string::npos)
-// 		throw runtime_error("Server did not found");
-// 	while (start != end && start < config.length())
-// 	{
-// 		start = find_start_server(start, config);
-// 		end = find_end_server(start, config);
-// 		if (start == end && !isspace(config[start]))
-// 			throw runtime_error("problem with scope");
-// 		server_config.push_back(config.substr(start, end - start + 1));
-// 		server_num++;
-// 		start = end + 1;
-// 	}
-// }
-
-/**************************************************
- * 
- *	Find_start_server() search for "server " and
- *	return the index of { start of server
- *
-**************************************************/
-// size_t WebServer::find_start_server(size_t start, string &config)
-// {
-// 	size_t i;
-
-// 	for (i = start; config[i]; i++)
-// 	{
-// 		if (config[i] == 's')
-// 			break ;
-// 		if (!isspace(config[i]))
-// 			throw runtime_error("Wrong character out of server scope{}");
-// 	}
-// 	if (!config[i])
-// 		return (start);
-// 	if (config.compare(i, 6, "server") != 0)
-// 		throw runtime_error("Wrong character out of server scope{}");
-// 	i += 6;
-// 	while (config[i] && isspace(config[i]))
-// 		i++;
-// 	if (config[i] == '{')
-// 		return (i);
-// 	else
-// 		throw runtime_error("Wrong character out of server scope{}");
-// }
-
-/**************************************************
- * 
- *	Find_end_server() search for server end and
- *	return the index of } end of server
- *
-**************************************************/
-// size_t WebServer::find_end_server(size_t start, string &config)
-// {
-// 	size_t	i;
-// 	size_t	scope;
-	
-// 	scope = 0;
-// 	for (i = start + 1; config[i]; i++)
-// 	{
-// 		if (config[i] == '{')
-// 			scope++;
-// 		if (config[i] == '}')
-// 		{
-// 			if (!scope)
-// 				return (i);
-// 			scope--;
-// 		}
-// 	}
-// 	return (start);
-// }
-
-
 
 void WebServer::get_request(int client_fd)
 {
@@ -267,7 +119,7 @@ void WebServer::get_request(int client_fd)
 	}
 }
 
-void WebServer::connect_client(int listener, struct pollfd *pollfds, nfds_t &nfds, int &maxfds)
+void WebServer::connect_client(int listener, struct pollfd *pollfds, nfds_t &nfds)
 {
 	std::cout<<"\tconnect client...\n";
 	int fd_new;
@@ -320,7 +172,7 @@ WebServer::~WebServer()
 {
 	size_t socket_num = websockets.size();
 	for (size_t i = 0; i < socket_num; ++i)
-		delete &websockets[i];
+		delete websockets[i];
 		
 	for (int fd = 0; fd < static_cast<int>(nfds + 1); fd++)
 	{
