@@ -203,16 +203,24 @@ void Request::parse(const char* request_data) {
 
 void Request::parsePort(const char* request_data) {
     // Парсим порт из запроса
-    const char* port_start = std::strstr(request_data, "Host: ");
-    if (port_start != NULL) {
-        port_start += 6; // Пропускаем "Host: "
-        const char* port_end = std::strchr(port_start, ':');
-        if (port_end != NULL) {
-            std::string port_str(port_start, port_end);
-            int port = std::atoi(port_str.c_str());
+    const char* host_start = std::strstr(request_data, "Host: ");
+    if (host_start != NULL) {
+        host_start += 6; // Пропускаем "Host: "
+        const char* host_end = std::strchr(host_start, '\r');
+        if (host_end != NULL) {
+            std::string host_info(host_start, host_end);
+            
+            // Разбиваем информацию о хосте по двоеточию
+            size_t colon_pos = host_info.find(':');
+            if (colon_pos != std::string::npos) {
+                std::string port_str = host_info.substr(colon_pos + 1);
+                port = std::atoi(port_str.c_str());
+            }
         }
     }
 }
+
+
 //================ Print info about request =====================//
 
 void Request::print_info()
@@ -223,6 +231,7 @@ void Request::print_info()
 	std::cout<<"Type:     ["<<method<<"]"<<std::endl;
 	std::cout<<"Resource: ["<<path<<"]"<<std::endl;
 	std::cout<<"Protocol: ["<<http_version<<"]"<<std::endl<<std::endl;
+    std::cout<<"Port: ["<<port<<"]"<<std::endl<<std::endl;
 	std::cout<<YELLOW;
 	std::cout<<"Headers:"<<std::endl;
 	std::map<std::string, std::string>::iterator it;

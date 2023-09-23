@@ -90,7 +90,7 @@ void WebServer::get_request(int client_fd)
 		if (!req.valid()){
 			resp.set_status(404);
 			resp.set_content_type("text/plain");
-			resp.set_body("Poshel nahui!");
+			resp.set_body("Poshel nahui REQ IS INVALID");
 			// return ;
 		} else {
 			req.print_info();
@@ -98,12 +98,11 @@ void WebServer::get_request(int client_fd)
 			ServerConfig serverConfig = getServerConfigByPort(req.getPort());
 			if (!serverConfig.getRoot().empty()) // Проверка на пустой сервер
             {
-                // std::string indexPage = serverConfig.getIndex();
                 // Загрузка содержимого indexPage и установка его как тела ответа
+
                 std::string indexContent = loadIndexContent(serverConfig);
                 resp.set_body(indexContent);
-            }
-            else
+            } else
             {
                 resp.set_body("Invalid server configuration(Poshel nahyi)");
             }
@@ -204,6 +203,7 @@ WebServer::~WebServer()
 }
 
 ServerConfig WebServer::getServerConfigByPort(int port) const {
+
     for (size_t i = 0; i < servers.size(); ++i) {
     	const ServerConfig& serverConfig = servers[i];
         if (serverConfig.getPort() == port) {
@@ -217,8 +217,9 @@ ServerConfig WebServer::getServerConfigByPort(int port) const {
 
 std::string WebServer::loadIndexContent(const ServerConfig& serverConfig) const {
     ServerConfig nonConstServerConfig = serverConfig; // Создаем неконстантную копию объекта
-    std::string indexPath = nonConstServerConfig.getRoot() + "/" + nonConstServerConfig.getIndex();
-    std::ifstream indexFile(indexPath.c_str());
+    std::string indexPath = nonConstServerConfig.getRoot() + nonConstServerConfig.getIndex();
+
+	std::ifstream indexFile(indexPath.c_str());
     if (indexFile) {
         std::stringstream buffer;
         buffer << indexFile.rdbuf();
