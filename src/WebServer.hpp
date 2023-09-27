@@ -18,19 +18,20 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Socket.hpp"
-#include <iostream>
+#include "Utils.hpp"
+// #include <iostream>
 #include <sys/stat.h>
 #include <fstream>
-#include <string>
+// #include <string>
 #include <utility>
-#include <sstream>
+// #include <sstream>
 #include <dirent.h>
 #include "Server.hpp"
 #include "ConfigParser.hpp"
 #include "ServerConfig.hpp"
 #include "Location.hpp"
 #include "ConfigFile.hpp"
-#include <vector>
+// #include <vector>
 #include <cstdio>
 // #include <cstdint>
 
@@ -60,7 +61,7 @@ private:
 	void get_request(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
 	ServerConfig getServerConfigByPort(int port) const;
-	std::string loadIndexContent(const ServerConfig& serverConfig) const;
+	std::string loadIndexContent(Request& req, const ServerConfig& serverConfig) const;
 	
 public:
 	WebServer(std::vector<ServerConfig> configs);

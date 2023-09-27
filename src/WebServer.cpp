@@ -89,18 +89,18 @@ void WebServer::get_request(int client_fd)
 
 		if (!req.valid()){
 			resp.set_status(404);
-			resp.set_content_type("text/plain");
+			resp.set_content_type("text/html");
 			resp.set_body("Poshel nahui REQ IS INVALID");
 			// return ;
 		} else {
 			req.print_info();
-			resp.set_content_type("text/plain");
+			resp.set_content_type("text/html");
 			ServerConfig serverConfig = getServerConfigByPort(req.getPort());
 			if (!serverConfig.getRoot().empty()) // Проверка на пустой сервер
             {
-                // Загрузка содержимого indexPage и установка его как тела ответа
 
-                std::string indexContent = loadIndexContent(serverConfig);
+                // Загрузка содержимого indexPage и установка его как тела ответа
+                std::string indexContent = loadIndexContent(req, serverConfig);
                 resp.set_body(indexContent);
             } else
             {
@@ -215,10 +215,27 @@ ServerConfig WebServer::getServerConfigByPort(int port) const {
 }
 
 
-std::string WebServer::loadIndexContent(const ServerConfig& serverConfig) const {
+std::string WebServer::loadIndexContent(Request& req, const ServerConfig& serverConfig) const {
     ServerConfig nonConstServerConfig = serverConfig; // Создаем неконстантную копию объекта
     std::string indexPath = nonConstServerConfig.getRoot() + nonConstServerConfig.getIndex();
 
+	if (req.getPath() != "/"){
+		const std::vector<Location> locations = nonConstServerConfig.getLocations();
+		int matches = 0;
+		Location matchedLocation;
+		for (size_t i = 0; i < locations.size(); ++i) {
+			const Location& location = locations[i];
+			if (pathMatch(location.getPath(), req.getPath()) > matches) {
+				matches = pathMatch(location.getPath(), req.getPath());
+				matchedLocation = location;
+			}
+   		}
+		if (matches != 0){
+			std::cout << "MATCHES for '"<<req.getPath()<< "' and '"<<matchedLocation.getPath()<<"': " << matches << std::endl;
+			indexPath = matchedLocation.getRootLocation() + matchedLocation.getIndexLocation();
+		}
+	} 
+	std::cout << "indexPath = "<< indexPath << std::endl;	
 	std::ifstream indexFile(indexPath.c_str());
     if (indexFile) {
         std::stringstream buffer;
