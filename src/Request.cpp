@@ -128,7 +128,7 @@ Request::Request(const char* request_data) {
 }
 
 bool Request::valid() const {
-    return !method.empty() && !path.empty() && !http_version.empty();
+    return (method=="GET" || method=="PUT" || method=="POST" || method=="DELETE") && !path.empty() && !http_version.empty();
 }
 
 std::string Request::getMethod() const {

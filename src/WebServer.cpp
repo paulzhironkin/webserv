@@ -100,10 +100,9 @@ void WebServer::get_request(int client_fd)
             {
 
                 // Загрузка содержимого indexPage и установка его как тела ответа
-                std::string indexContent = loadIndexContent(req, serverConfig);
-                resp.set_body(indexContent);
-            } else
-            {
+                std::string content = responseContent(req, serverConfig);
+                resp.set_body(content);
+            } else {
                 resp.set_body("Invalid server configuration(Poshel nahyi)");
             }
 		}	
@@ -214,6 +213,18 @@ ServerConfig WebServer::getServerConfigByPort(int port) const {
     return ServerConfig();
 }
 
+std::string WebServer::responseContent(Request& req, const ServerConfig& serverConfig) const {
+	std::string content;
+	if (req.getMethod()=="GET")
+		return loadIndexContent(req,serverConfig);
+	else if (req.getMethod()=="POST")
+		content = "post";
+	else if (req.getMethod()=="PUT")
+		content = "put";
+	else //DELETE
+		content = "del";
+	return content;
+}
 
 std::string WebServer::loadIndexContent(Request& req, const ServerConfig& serverConfig) const {
     ServerConfig nonConstServerConfig = serverConfig; // Создаем неконстантную копию объекта

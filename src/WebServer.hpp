@@ -62,6 +62,7 @@ private:
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
 	ServerConfig getServerConfigByPort(int port) const;
 	std::string loadIndexContent(Request& req, const ServerConfig& serverConfig) const;
+	std::string responseContent(Request& req, const ServerConfig& serverConfig) const;
 	
 public:
 	WebServer(std::vector<ServerConfig> configs);
