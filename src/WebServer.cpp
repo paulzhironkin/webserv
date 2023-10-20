@@ -104,6 +104,10 @@ void WebServer::send_response(int client_fd)
 
 			// Загрузка содержимого indexPage и установка его как тела ответа
 			std::string content = responseContent(req, serverConfig);
+			if (content == ""){
+					resp.set_body("Netu faila");
+				}
+			resp.set_status(OK);
 			resp.set_body(content);
 		} else {
 			resp.set_body("Invalid server configuration(Poshel nahyi)");
