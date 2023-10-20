@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/10/20 15:50:05 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/10/20 16:10:53 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void WebServer::launch_server()
 				else //getting info from connection: if fd from client
 				{
 					get_request((pollfds + fd)->fd); // TODO: split it to get_request->parse_reqiest->send response
+					send_response((pollfds + fd)->fd);
 				}
 			}
 		}
@@ -75,63 +76,54 @@ void WebServer::launch_server()
 void WebServer::get_request(int client_fd)
 {
 	std::cout<<"\tget request...\n";
-	char buf[BUF_SIZE];
 	ssize_t nbytes = recv(client_fd, buf, (size_t)BUF_SIZE, 0);
-	if (nbytes < 0)
+	if (nbytes <= 0)
 	{
 		perror("recv error\n");
 		exit(EXIT_FAILURE);
 	}
-	else if (nbytes > 0)
-	{
-		Request req(buf);
-		Response resp(200);
+}
 
-		if (!req.valid()){
-			resp.set_status(404);
-			resp.set_content_type("text/html");
-			resp.set_body("Poshel nahui REQ IS INVALID");
-			// return ;
-		} else {
-			req.print_info();
-			resp.set_content_type("text/html");
-			ServerConfig serverConfig = getServerConfigByPort(req.getPort());
-			if (!serverConfig.getRoot().empty()) // Проверка на пустой сервер
-            {
+void WebServer::send_response(int client_fd)
+{
+	
+	Request req(buf);
+	Response resp(200);
 
-                // Загрузка содержимого indexPage и установка его как тела ответа
-                std::string content = responseContent(req, serverConfig);
-                resp.set_body(content);
-            } else {
-                resp.set_body("Invalid server configuration(Poshel nahyi)");
-            }
-		}	
-		
-		std:: string response_message = resp.generate_response();
-		int message_len = strlen(response_message.c_str());
-		int bytes_sent = send(client_fd, response_message.c_str(), message_len, 0);
-		if (bytes_sent == -1) {
-			perror("Send error");
+	if (!req.valid()){
+		resp.set_status(404);
+		resp.set_content_type("text/html");
+		resp.set_body("Poshel nahui REQ IS INVALID");
+		// return ;
+	} else {
+		req.print_info();
+		resp.set_content_type("text/html");
+		ServerConfig serverConfig = getServerConfigByPort(req.getPort());
+		if (!serverConfig.getRoot().empty()) // Проверка на пустой сервер
+		{
+
+			// Загрузка содержимого indexPage и установка его как тела ответа
+			std::string content = responseContent(req, serverConfig);
+			resp.set_body(content);
 		} else {
-			std::cout<<"\033[92m";
-			std::cout<<"Sent "<<bytes_sent<<" bytes:"<<std::endl;
-			std::cout<<response_message<<std::endl<<std::endl;
-			std::cout<<RESET;
-			if (close (client_fd) == -1)
-			{
-				perror("Close error\n");
-				exit(EXIT_FAILURE);
-			}
-			client_fd *= -1;
+			resp.set_body("Invalid server configuration(Poshel nahyi)");
 		}
-	}
-	else
-	{
-		// connection closed by client
+	}	
+	
+	std:: string response_message = resp.generate_response();
+	int message_len = strlen(response_message.c_str());
+	int bytes_sent = send(client_fd, response_message.c_str(), message_len, 0);
+	if (bytes_sent == -1) {
+		perror("Send error");
+	} else {
+		std::cout<<"\033[92m";
+		std::cout<<"Sent "<<bytes_sent<<" bytes:"<<std::endl;
+		std::cout<<response_message<<std::endl<<std::endl;
+		std::cout<<RESET;
 		std::cout<<CYAN;
 		std::cout<<"****************************************"<<std::endl;
 		std::cout<<"*                                      *"<<std::endl;
-		std::cout<<"*      Socket "<<client_fd<<" closed by client       *"<<std::endl;
+		std::cout<<"*      Socket "<<client_fd<<" closed       *"<<std::endl;
 		std::cout<<"*                                      *"<<std::endl;
 		std::cout<<"****************************************"<<std::endl<<std::endl;
 		std::cout<<RESET;
@@ -140,7 +132,7 @@ void WebServer::get_request(int client_fd)
 			perror("Close error\n");
 			exit(EXIT_FAILURE);
 		}
-		client_fd *= -1; // make it negative so that it is ignored in future
+		client_fd *= -1;
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:45:03 by latahbah          #+#    #+#             */
-/*   Updated: 2023/09/22 20:36:49 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/10/20 16:09:53 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,12 @@ private:
 	std::vector<ServerConfig> servers;
 	struct pollfd *pollfds;
 	int		maxfds;
+	char	buf[BUF_SIZE];
 	std::vector<Socket *> websockets;
 	nfds_t nfds;
 	void connect_client(int listener, struct pollfd *pollfds, nfds_t &numfds);
 	void get_request(int client_fd);
+	void send_response(int client_fd);
 	void connection_info(int client_fd, struct sockaddr_storage client_saddr);
 	ServerConfig getServerConfigByPort(int port) const;
 	std::string loadIndexContent(Request& req, const ServerConfig& serverConfig) const;
