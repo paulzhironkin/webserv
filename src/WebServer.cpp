@@ -6,7 +6,7 @@
 /*   By: latahbah <latahbah@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 09:44:42 by latahbah          #+#    #+#             */
-/*   Updated: 2023/09/22 20:39:33 by latahbah         ###   ########.fr       */
+/*   Updated: 2023/10/20 15:50:05 by latahbah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,12 @@ void WebServer::get_request(int client_fd)
 			std::cout<<"Sent "<<bytes_sent<<" bytes:"<<std::endl;
 			std::cout<<response_message<<std::endl<<std::endl;
 			std::cout<<RESET;
+			if (close (client_fd) == -1)
+			{
+				perror("Close error\n");
+				exit(EXIT_FAILURE);
+			}
+			client_fd *= -1;
 		}
 	}
 	else
